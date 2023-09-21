@@ -3,21 +3,26 @@
  * This file is part of Handlebars-php
  * Base on mustache-php https://github.com/bobthecow/mustache.php
  *
+ * PHP version 5.3
+ *
  * Handlebars Inline Template string Loader implementation.
  *
  * With the InlineLoader, templates can be defined at the end of any PHP source
  * file:
  *
- *     $loader  = new \Handlebars\Loader\InlineLoader(__FILE__, __COMPILER_HALT_OFFSET__);
+ *     $loader  = new \Handlebars\Loader\InlineLoader(
+ *                      __FILE__,
+ *                      __COMPILER_HALT_OFFSET__
+ *                  );
  *     $hello   = $loader->load('hello');
  *     $goodbye = $loader->load('goodbye');
  *
  *     __halt_compiler();
  *
- *     @@ hello
+ * @@ hello
  *     Hello, {{ planet }}!
  *
- *     @@ goodbye
+ * @@ goodbye
  *     Goodbye, cruel {{ planet }}
  *
  * Templates are deliniated by lines containing only `@@ name`.
@@ -29,7 +34,7 @@
  * @copyright 2010-2015 (c) Justin Hileman
  * @copyright 2015 (c) fzerorubigd
  * @license   MIT <http://opensource.org/licenses/MIT>
- * @version   Release: @package_version@
+ * @version   Release: GIT: <git_id>
  * @link      http://xamin.ir
  */
 
@@ -61,7 +66,10 @@ class InlineLoader implements Loader
      * The magic constants `__FILE__` and `__COMPILER_HALT_OFFSET__` are usually
      * perfectly suited to the job:
      *
-     *     $loader = new \Handlebars\Loader\InlineLoader(__FILE__, __COMPILER_HALT_OFFSET__);
+     *     $loader = new \Handlebars\Loader\InlineLoader(
+     *                  __FILE__,
+     *                  __COMPILER_HALT_OFFSET__
+     *              );
      *
      * Note that this only works if the loader is instantiated inside the same
      * file as the inline templates. If the templates are located in another

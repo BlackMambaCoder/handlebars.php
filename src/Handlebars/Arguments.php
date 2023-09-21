@@ -109,14 +109,18 @@ class Arguments
         $bad_chars = preg_quote(Context::NOT_VALID_NAME_CHARS, '#');
         $bad_seg_chars = preg_quote(Context::NOT_VALID_SEGMENT_NAME_CHARS, '#');
 
-        $name_chunk = '(?:[^' . $bad_chars . '\s]+)|(?:\[[^' . $bad_seg_chars . ']+\])';
-        $variable_name = '(?:\.\.\/)*(?:(?:' . $name_chunk . ')[\.\/])*(?:' . $name_chunk  . ')\.?';
+        $name_chunk
+            = '(?:[^' . $bad_chars . '\s]+)|(?:\[[^' . $bad_seg_chars . ']+\])';
+        $variable_name
+            = "(?:\.\.\/)*(?:(?:$name_chunk)[\.\/])*(?:$name_chunk)\.?";
         $special_variable_name = '@[a-z]+';
         $escaped_value = '(?:(?<!\\\\)".*?(?<!\\\\)"|(?<!\\\\)\'.*?(?<!\\\\)\')';
         $argument_name = $name_chunk;
-        $argument_value = $variable_name . '|' . $escaped_value . '|' . $special_variable_name;
+        $argument_value
+            = $variable_name . '|' . $escaped_value . '|' . $special_variable_name;
         $positional_argument = '#^(' . $argument_value . ')#';
-        $named_argument = '#^(' . $argument_name . ')\s*=\s*(' . $argument_value . ')#';
+        $named_argument
+            = '#^(' . $argument_name . ')\s*=\s*(' . $argument_value . ')#';
 
         $current_str = trim($args_string);
 
@@ -134,7 +138,9 @@ class Arguments
             } elseif (preg_match($positional_argument, $current_str, $matches)) {
                 // A positional argument found. It cannot follow named arguments
                 if (count($this->namedArgs) !== 0) {
-                    throw new \InvalidArgumentException('Positional arguments cannot follow named arguments');
+                    throw new \InvalidArgumentException(
+                        'Positional arguments cannot follow named arguments'
+                    );
                 }
 
                 $this->positionalArgs[] = $this->prepareArgumentValue($matches[1]);

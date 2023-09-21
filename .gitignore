@@ -8,3 +8,6 @@ composer.lock
 GPATH
 GRTAGS
 GTAGS
+.phpunit.result.cache
+.phpunit.cache
+phpunit.xml.dist.bak

@@ -49,7 +49,7 @@ class Helpers
      *
      * @param array      $helpers  array of name=>$value helpers
      * @param array|bool $defaults add defaults helper
-     *          (if, unless, each,with, bindAttr)
+     *                             (if, unless, each,with, bindAttr)
      *
      * @throws \InvalidArgumentException when $helpers is not an array
      * (or traversable) or helper is not a callable
@@ -102,7 +102,8 @@ class Helpers
         if (!is_callable($helper) && ! $helper instanceof Helper) {
             throw new \InvalidArgumentException(
                 sprintf(
-                    "%s Helper is not a callable or doesn't implement the Helper interface.",
+                    "%s Helper is not a callable or 
+                    doesn't implement the Helper interface.",
                     $name
                 )
             );

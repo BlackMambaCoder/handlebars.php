@@ -9,6 +9,7 @@
  * @package   Handlebars
  * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @author    Dmitriy Simushev <simushevds@gmail.com>
+ * @author    Leonhard Radonić <leonhard.radonic@gmail.com>
  * @copyright 2013 (c) f0ruD A
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   GIT: $Id$
@@ -18,10 +19,9 @@
 /**
  * Class HandlebarsTest
  */
-class HandlebarsTest extends \PHPUnit_Framework_TestCase
+class HandlebarsTest extends \PHPUnit\Framework\TestCase
 {
-    public function setUp()
-    {
+    public function setUp(): void {
         \Handlebars\Autoloader::register();
     }
 
@@ -54,6 +54,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
      */
     public function testBasicTags($src, $data, $result)
     {
+        // this one
         $loader = new \Handlebars\Loader\StringLoader();
         $engine = new \Handlebars\Handlebars(array('loader' => $loader));
         $this->assertEquals($result, $engine->render($src, $data));
@@ -64,7 +65,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
      *
      * @return array
      */
-    public function simpleTagdataProvider()
+    public static function simpleTagdataProvider()
     {
         return array(
             array(
@@ -198,6 +199,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
      */
     public function testSimpleHelpers($src, $data, $result)
     {
+        // THIS ONE
         $loader = new \Handlebars\Loader\StringLoader();
         $helpers = new \Handlebars\Helpers();
         $engine = new \Handlebars\Handlebars(array('loader' => $loader, 'helpers' => $helpers));
@@ -210,7 +212,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
      *
      * @return array
      */
-    public function internalHelpersdataProvider()
+    public static function internalHelpersdataProvider()
     {
         return array(
             array(
@@ -455,7 +457,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("Used", $engine->render('{{# stopToken fun no}}Not used{{ fun }}Used{{/stopToken }}', array()));
         $this->assertEquals("Not used", $engine->render('{{# stopToken any yes}}Not used{{ any }}Used{{/stopToken }}', array()));
 
-        $this->setExpectedException('InvalidArgumentException');
+        $this->expectException('InvalidArgumentException');
         $engine->getHelpers()->call('invalid', $engine->loadTemplate(''), new \Handlebars\Context(), '', '');
     }
     
@@ -669,7 +671,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
 
     public function testInvalidHelper()
     {
-        $this->setExpectedException('RuntimeException');
+        $this->expectException('RuntimeException');
         $loader = new \Handlebars\Loader\StringLoader();
         $engine = new \Handlebars\Handlebars(array('loader' => $loader));
         $engine->render('{{#NOTVALID argument}}XXX{{/NOTVALID}}', array());
@@ -710,6 +712,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
     {
         $loader = new \Handlebars\Loader\StringLoader();
         $engine = new \Handlebars\Handlebars(array('loader' => $loader));
+        $this->expectException('LogicException');
         $engine->render('{{#test}}{{#test2}}{{/test}}{{/test2}}', array());
     }
 
@@ -754,6 +757,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
      */
     public function testHelperWrongConstructor()
     {
+        $this->expectException(InvalidArgumentException::class);
         $helper = new \Handlebars\Helpers("helper");
     }
 
@@ -762,6 +766,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
      */
     public function testHelperWrongCallable()
     {
+        $this->expectException(InvalidArgumentException::class);
         $helper = new \Handlebars\Helpers();
         $helper->add('test', 1);
     }
@@ -771,6 +776,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
      */
     public function testHelperWrongGet()
     {
+        $this->expectException(InvalidArgumentException::class);
         $helper = new \Handlebars\Helpers();
         $x = $helper->test;
     }
@@ -780,6 +786,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
      */
     public function testHelperWrongUnset()
     {
+        $this->expectException(InvalidArgumentException::class);
         $helper = new \Handlebars\Helpers();
         unset($helper->test);
     }
@@ -816,7 +823,11 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
      */
     private function delTree($dir)
     {
-        $files = array_diff(scandir($dir), array('.', '..'));
+        $dirs = scandir($dir);
+        if ($dirs === false) {
+            return true;
+        }
+        $files = array_diff($dirs, array('.', '..'));
         foreach ($files as $file) {
             (is_dir("$dir/$file")) ? $this->delTree("$dir/$file") : unlink("$dir/$file");
         }
@@ -848,7 +859,7 @@ class HandlebarsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($engine->render('test', array()), 'HELLO');
         $this->assertEquals($engine->render('another', array()), 'GOODBYE');
 
-        $this->setExpectedException('RuntimeException');
+        $this->expectException('RuntimeException');
         $engine->render('invalid-template', array());
     }
 
@@ -908,6 +919,7 @@ EOM;
      */
     public function testFileSystemLoaderNotFound()
     {
+        $this->expectException(InvalidArgumentException::class);
         $loader = new \Handlebars\Loader\FilesystemLoader(realpath(__DIR__ . '/../fixture/data'));
         $engine = new \Handlebars\Handlebars();
         $engine->setLoader($loader);
@@ -921,6 +933,7 @@ EOM;
      */
     public function testFileSystemLoaderInvalidFolder()
     {
+        $this->expectException(RuntimeException::class);
         new \Handlebars\Loader\FilesystemLoader(realpath(__DIR__ . '/../fixture/') . 'invalid/path');
     }
 
@@ -966,7 +979,7 @@ EOM;
         $this->assertEquals('its foo', $engine->render('{{>foo-again}}', array()));
         $engine->unRegisterPartial('foo-again');
 
-        $this->setExpectedException('RuntimeException');
+        $this->expectException('RuntimeException');
         $engine->render('{{>foo-again}}', array());
 
     }
@@ -1039,12 +1052,13 @@ EOM;
      */
     public function testInvalidAccessContext($invalid)
     {
+        $this->expectException(InvalidArgumentException::class);
         $context = new \Handlebars\Context(array());
         $this->assertEmpty($context->get($invalid));
         $context->get($invalid, true);
     }
 
-    public function getInvalidData()
+    public static function getInvalidData()
     {
         return array(
             array('../../data'),
@@ -1062,6 +1076,7 @@ EOM;
      */
     public function testInvalidCustomTemplateClass()
     {
+        $this->expectException(InvalidArgumentException::class);
         $loader = new \Handlebars\Loader\StringLoader();
         $engine = new \Handlebars\Handlebars(array(
             'loader' => $loader,
@@ -1106,7 +1121,7 @@ EOM;
         $this->assertEquals($context->get("object_with_length_property.length"), "15cm");
     }
 
-    public function argumentParserProvider()
+    public static function argumentParserProvider()
     {
         return array(
             array('arg1 arg2', array("arg1", "arg2")),
@@ -1135,7 +1150,7 @@ EOM;
     public function testArgumentParser($arg_string, $expected_array)
     {
         $engine = new \Handlebars\Handlebars();
-        $template = new \Handlebars\Template($engine, null, null);
+        $template = new \Handlebars\Template($engine, [], null);
         // get the string version of the arguments array
         $args = $template->parseArguments($arg_string);
         $args = array_map(function ($a) {
@@ -1144,7 +1159,7 @@ EOM;
         $this->assertEquals($args, $expected_array);
     }
 
-    public function namedArgumentParserProvider()
+    public static function namedArgumentParserProvider()
     {
         return array(
             array('arg1="value" arg2="value 2"', array('arg1' => 'value', 'arg2' => 'value 2')),
@@ -1167,7 +1182,7 @@ EOM;
     public function testNamedArgumentsParser($arg_string, $expected_array)
     {
         $engine = new \Handlebars\Handlebars();
-        $template = new \Handlebars\Template($engine, null, null);
+        $template = new \Handlebars\Template($engine, [], null);
         // get the string version of the arguments array
         $args = $template->parseNamedArguments($arg_string);
         $args = array_map(function ($a) {
@@ -1210,12 +1225,12 @@ EOM;
         }
     }
 
-    public function combinedArgumentsParserProvider()
+    public static function combinedArgumentsParserProvider()
     {
         $result = array();
 
         // Use data provider for positional arguments parser
-        foreach ($this->argumentParserProvider() as $dataSet) {
+        foreach (self::argumentParserProvider() as $dataSet) {
             $result[] = array(
                 $dataSet[0],
                 $dataSet[1],
@@ -1224,7 +1239,7 @@ EOM;
         }
 
         // Use data provider for named arguments parser
-        foreach ($this->namedArgumentParserProvider() as $dataSet) {
+        foreach (self::namedArgumentParserProvider() as $dataSet) {
             $result[] = array(
                 $dataSet[0],
                 false,
@@ -1255,7 +1270,7 @@ EOM;
         );
     }
 
-    public function stringLiteralInCustomHelperProvider()
+    public static function stringLiteralInCustomHelperProvider()
     {
         return array(
             array('{{#test2 arg1 "Argument 2"}}', array("arg1" => "Argument 1"), "Argument 1:Argument 2"),
@@ -1291,7 +1306,7 @@ EOM;
         $this->assertEquals($res, $results);
     }
 
-    public function integerLiteralInCustomHelperProvider()
+    public static function integerLiteralInCustomHelperProvider()
     {
         return array(
             array('{{test -5}}', array(), '-5'),
@@ -1346,11 +1361,11 @@ EOM;
 
         for ($i = 0; $i < strlen($all); $i++) {
             // Dot in string is valid, its an exception here
-            if ($all{$i} === '.') {
+            if ($all[$i] === '.') {
                 continue;
             }
             try {
-                $name = 'var' . $all{$i} . 'var';
+                $name = 'var' . $all[$i]. 'var';
                 $engine->render('{{' . $name . '}}', array($name => 'VALUE'));
                 throw new Exception("Accept the $name :/");
             } catch (Exception $e) {
@@ -1408,7 +1423,7 @@ EOM;
         $this->assertEquals('A-B', $engine->render('{{concat (concat a "-") b}}', array('a' => 'A', 'b' => 'B', 'A-' => '!')));
     }
 
-    public function ifUnlessDepthDoesntChangeProvider()
+    public static function ifUnlessDepthDoesntChangeProvider()
     {
         return array(array(
             '{{#with b}}{{#if this}}{{../a}}{{/if}}{{/with}}',
@@ -1449,7 +1464,7 @@ EOM;
     }
 
 
-    public function stringLiteralsInIfAndUnlessHelpersProvider()
+    public static function stringLiteralsInIfAndUnlessHelpersProvider()
     {
         return array(
             // IfHelper
@@ -1498,7 +1513,7 @@ EOM;
         $this->assertEquals($res, $results);
     }
 
-    public function rootSpecialVariableProvider()
+    public static function rootSpecialVariableProvider()
     {
         return array(
             array('{{foo}} {{ @root.foo }}', array( 'foo' => 'bar' ), "bar bar"),

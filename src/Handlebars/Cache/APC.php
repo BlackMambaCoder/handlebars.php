@@ -10,6 +10,7 @@
  * @author    Joey Baker <joey@byjoeybaker.com>
  * @author    Behrooz Shabani <everplays@gmail.com>
  * @author    Mária Šormanová <maria.sormanova@gmail.com>
+ * @author    Leonhard Radonić <leonhard.radonic@gmail.com>
  * @copyright 2013 (c) Meraki, LLP
  * @copyright 2013 (c) Behrooz Shabani
  * @license   MIT <http://opensource.org/licenses/MIT>
@@ -36,6 +37,8 @@ class APC implements Cache
 {
 
     /**
+     * Prefix
+     * 
      * @var string
      */
     private $_prefix;
@@ -61,7 +64,7 @@ class APC implements Cache
     public function get($name)
     {
         $success = null;
-        $result = apc_fetch($this->_getKey($name), $success);
+        $result = apcu_fetch($this->_getKey($name), $success);
 
         return $success ? $result : false;
 
@@ -80,7 +83,7 @@ class APC implements Cache
      */
     public function set($name, $value, $ttl = 0)
     {
-        apc_store($this->_getKey($name), $value, $ttl);
+        apcu_store($this->_getKey($name), $value, $ttl);
     }
 
     /**
@@ -92,7 +95,7 @@ class APC implements Cache
      */
     public function remove($name)
     {
-        apc_delete($this->_getKey($name));
+        apcu_delete($this->_getKey($name));
     }
 
     /**

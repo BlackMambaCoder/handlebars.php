@@ -143,7 +143,10 @@ class Tokenizer
             $quoteInTag = $this->state != self::IN_TEXT
                 && ($text[$i] == self::T_SINGLE_Q || $text[$i] == self::T_DOUBLE_Q);
 
-            if ($this->escaped && !$this->tagChange($this->otag, $text, $i) && !$quoteInTag) {
+            if ($this->escaped
+                && !$this->tagChange($this->otag, $text, $i)
+                && !$quoteInTag
+            ) {
                 $this->buffer .= "\\";
             }
 
@@ -157,22 +160,30 @@ class Tokenizer
                 // brace.
                 $prev_slash = substr($this->buffer, -1) == '\\';
 
-                if ($this->tagChange($this->otag. self::T_TRIM, $text, $i) and (!$this->escaped || $prev_slash)) {
+                if ($this->tagChange($this->otag. self::T_TRIM, $text, $i)
+                    && (!$this->escaped || $prev_slash)
+                ) {
                     $this->flushBuffer();
                     $this->state = self::IN_TAG_TYPE;
                     $this->trimLeft = true;
-                } elseif ($this->tagChange(self::T_UNESCAPED.$this->otag, $text, $i) and $this->escaped) {
+                } elseif ($this->tagChange(self::T_UNESCAPED.$this->otag, $text, $i)
+                    && $this->escaped
+                ) {
                     $this->buffer .= "{{{";
                     $i += 2;
                     continue;
-                } elseif ($this->tagChange($this->otag, $text, $i) and (!$this->escaped || $prev_slash)) {
+                } elseif ($this->tagChange($this->otag, $text, $i)
+                    && (!$this->escaped || $prev_slash)
+                ) {
                     $i--;
                     $this->flushBuffer();
                     $this->state = self::IN_TAG_TYPE;
                 } elseif ($this->escaped and $this->escaping) {
                     // We should not add extra slash before opening tag because
                     // doubled slash where should be transformed to single one
-                    if (($i + 1) < $len && !$this->tagChange($this->otag, $text, $i + 1)) {
+                    if (($i + 1) < $len
+                        && !$this->tagChange($this->otag, $text, $i + 1)
+                    ) {
                         $this->buffer .= "\\";
                     }
                 } elseif (!$this->escaping) {
@@ -251,16 +262,7 @@ class Tokenizer
                     if ($this->tagType == self::T_UNESCAPED) {
                         if ($this->ctag == '}}') {
                             $i++;
-                        } /* else { // I can't remember why this part is here! the ctag is always }} and
-                            // Clean up `{{{ tripleStache }}}` style tokens.
-                            $lastIndex = count($this->tokens) - 1;
-                            $lastName = $this->tokens[$lastIndex][self::NAME];
-                            if (substr($lastName, -1) === '}') {
-                                $this->tokens[$lastIndex][self::NAME] = trim(
-                                    substr($lastName, 0, -1)
-                                );
-                            }
-                        } */
+                        }
                     }
                 } else {
                     $this->buffer .= $text[$i];
