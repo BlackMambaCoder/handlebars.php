@@ -99,19 +99,25 @@ class Handlebars
     private $_cache;
 
     /**
-     * @var int time to live parameter in seconds for the cache usage
-     *          default set to 0 which means that entries stay in cache
-     *          forever and are never purged
+     * Rime to live parameter in seconds for the cache usage
+     * default set to 0 which means that entries stay in cache
+     * forever and are never purged
+     *
+     * @var int
      */
     private $_ttl = 0;
 
     /**
-     * @var string the class to use for the template
+     * The class to use for the template
+     *
+     * @var string
      */
     private $_templateClass = 'Handlebars\\Template';
 
     /**
-     * @var callable escape function to use
+     * Escape function to use
+     *
+     * @var callable
      */
     private $_escape = 'htmlspecialchars';
 
@@ -272,21 +278,21 @@ class Handlebars
     {
         return $this->getHelpers()->has($name);
     }
-    
+
      /**
-     * Add a new helper.
-     *
-     * @param string $name   helper name
-     * @param mixed  $helper helper callable
-     *
-     * @return void
-     */
+      * Add a new helper.
+      *
+      * @param string $name   helper name
+      * @param mixed  $helper helper callable
+      *
+      * @return void
+      */
     public function registerHelper($name, $helper)
-    {    
+    {
         $callback = function ($template, $context, $arg) use ($helper) {
             $args = $template->parseArguments($arg);
             $named = $template->parseNamedArguments($arg);
-            
+
             foreach ($args as $i => $arg) {
                 //if it's literally string
                 if ($arg instanceof BaseString) {
@@ -294,16 +300,16 @@ class Handlebars
                     $args[$i] = (string) $arg;
                     continue;
                 }
-                
+
                 //not sure what to do if it's not a string or StringWrapper
                 if (!is_string($arg)) {
                     continue;
                 }
-                
+
                 //it's a variable and we need to figure out the value of it
                 $args[$i] = $context->get($arg);
             }
-            
+
             //push the options    
             $args[] = array(
                 //special fields
@@ -317,7 +323,7 @@ class Handlebars
                 // A renderer for block helper
                 'fn' => function ($inContext = null) use ($context, $template) {
                     $defined = !!$inContext;
-                    
+
                     if (!$defined) {
                         $inContext = $context;
                         $inContext->push($inContext->last());
@@ -325,7 +331,7 @@ class Handlebars
                         $inContext = new ChildContext($inContext);
                         $inContext->setParent($context);
                     }
-                    
+
                     $template->setStopToken('else');
                     $buffer = $template->render($inContext);
                     $template->setStopToken(false);
@@ -334,18 +340,18 @@ class Handlebars
                     //What's the point of this again?
                     //I mean in this context (literally)
                     //$template->discard($inContext);
-                    
+
                     if (!$defined) {
                         $inContext->pop();
                     }
-                    
+
                     return $buffer;
                 },
-                
+
                 // A render for the else block
                 'inverse' => function ($inContext = null) use ($context, $template) {
                     $defined = !!$inContext;
-                    
+
                     if (!$defined) {
                         $inContext = $context;
                         $inContext->push($inContext->last());
@@ -353,27 +359,27 @@ class Handlebars
                         $inContext = new ChildContext($inContext);
                         $inContext->setParent($context);
                     }
-                    
+
                     $template->setStopToken('else');
                     $template->discard($inContext);
                     $template->setStopToken(false);
                     $buffer = $template->render($inContext);
-                    
+
                     if (!$defined) {
                         $inContext->pop();
                     }
-                    
+
                     return $buffer;
                 },
-                
+
                 // The current context.
                 'context' => $context,
                 // The current template
                 'template' => $template);
-            
+
             return call_user_func_array($helper, $args);
         };
-    
+
         $this->addHelper($name, $callback);
     }
 

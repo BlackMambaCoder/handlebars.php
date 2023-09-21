@@ -258,7 +258,8 @@ class Context
                     if (is_string($current) and $current == '') {
                         return $current;
                     }
-                    $current = $this->_findVariableInContext($current, $chunk, $strict);
+                    $current
+                        = $this->_findVariableInContext($current, $chunk, $strict);
                 }
                 prev($this->stack);
 

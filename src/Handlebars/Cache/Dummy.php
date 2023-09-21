@@ -58,8 +58,8 @@ class Dummy implements Cache
      * @param mixed  $value data to store
      * @param int    $ttl   time to live in seconds
      *
-     * $ttl is ignored since the cache is implemented
-     * by an array and lives only inside one request
+     *                      $ttl is ignored since the cache is implemented
+     *                      by an array and lives only inside one request
      *
      * @return void
      */

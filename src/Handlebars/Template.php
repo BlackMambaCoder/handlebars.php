@@ -51,12 +51,16 @@ class Template
     protected $handlebars;
 
     /**
-     * @var array The tokenized tree
+     * The tokenized tree
+     *
+     * @var array
      */
     protected $tree = array();
 
     /**
-     * @var string The template source
+     * The template source
+     *
+     * @var string
      */
     protected $source = '';
 
@@ -538,14 +542,17 @@ class Template
         if ($current[Tokenizer::ARGS]) {
             $arguments = new Arguments($current[Tokenizer::ARGS]);
 
-            $context = new Context($this->_preparePartialArguments($context, $arguments));
+            $context = new Context(
+                $this->_preparePartialArguments($context, $arguments)
+            );
         }
 
         return $partial->render($context);
     }
 
     /**
-     * Prepare the arguments of a partial to actual array values to be used in a new context
+     * Prepare the arguments of a partial to actual array values to be
+     * used in a new context
      *
      * @param Context   $context   Current context
      * @param Arguments $arguments Arguments for partial

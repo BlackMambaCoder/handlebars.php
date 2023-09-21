@@ -37,6 +37,8 @@ class APC implements Cache
 {
 
     /**
+     * Prefix
+     * 
      * @var string
      */
     private $_prefix;
