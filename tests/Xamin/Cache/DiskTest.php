@@ -8,6 +8,7 @@
  * @category  Xamin
  * @package   Handlebars
  * @author    Mária Šormanová <maria.sormanova@gmail.com>
+ * @author    Leonhard Radonić <leonhard.radonic@gmail.com>
  * @copyright 2016 (c) Mária Šormanová
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   GIT: $Id$
@@ -26,15 +27,14 @@
  * @link       http://xamin.ir
  */
 
-class DiskTest extends \PHPUnit_Framework_TestCase
+class DiskTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * {@inheritdoc}
      *
      * @return void
      */
-    public function setUp()
-    {
+    public function setUp(): void {
         \Handlebars\Autoloader::register();
     }
 

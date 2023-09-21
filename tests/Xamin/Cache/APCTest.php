@@ -10,6 +10,7 @@
  * @author    fzerorubigd <fzerorubigd@gmail.com>
  * @author    Dmitriy Simushev <simushevds@gmail.com>
  * @author    Mária Šormanová <maria.sormanova@gmail.com>
+ * @author    Leonhard Radonić <leonhard.radonic@gmail.com>
  * @copyright 2013 (c) f0ruD A
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   GIT: $Id$
@@ -30,17 +31,20 @@
  * @version    Release: @package_version@
  * @link       http://xamin.ir
  */
-class APCTest extends \PHPUnit_Framework_TestCase
+class APCTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * {@inheritdoc}
      *
      * @return void
      */
-    public function setUp()
-    {
-        if ( ! extension_loaded('apc') || false === @apc_cache_info()) {
+    public function setUp(): void {
+        if ( ! extension_loaded('apcu')) {
             $this->markTestSkipped('The ' . __CLASS__ .' requires the use of APC');
+        }
+        //print_r(phpinfo());
+        if (false === @apcu_cache_info()) {
+            self::markTestSkipped('cache info is false');
         }
     }
 
